@@ -26,7 +26,7 @@ class SDNController:
         self.link_capacity = {}  # (u,v) -> capacity
         self.lock = threading.Lock()
 
-    # Topology management
+    #Topology management
     def add_node(self, node):
         self.graph.add_node(node)
         print(f"Node {node} added.")
@@ -51,7 +51,7 @@ class SDNController:
         else:
             print(f"Link {u}<->{v} does not exist.")
 
-    # --- Path computation & installation ---
+    # Path computation & installation
     def _compute_primary_backup(self, src, dst):
         try:
             paths = list(nx.all_shortest_paths(self.graph, src, dst, weight='weight'))
@@ -101,7 +101,7 @@ class SDNController:
                 else:
                     print(f"  No backup available for flow {flow.id}!")
 
-    # --- Monitoring & Utilization ---
+    # Monitoring & Utilization
     def show_topology(self):
         try:
             pos = nx.spring_layout(self.graph)
@@ -128,7 +128,7 @@ class SDNController:
             cap = self.link_capacity.get(e, 0)
             print(f"  {e}: {u}/{cap}")
 
-# --- CLI Interface ---
+# CLI Interface
 class SDNCli(Cmd):
     intro = "SDN Controller CLI. Type help or ? to list commands."
     prompt = "sdn> "
@@ -201,7 +201,7 @@ class SDNCli(Cmd):
 
 if __name__ == '__main__':
     ctrl = SDNController()
-    # Pre-load a sample topology
+    #Pre-load sample topology
     for n in ['A','B','C','D']:
         ctrl.add_node(n)
     ctrl.add_link('A','B')
@@ -210,7 +210,7 @@ if __name__ == '__main__':
     ctrl.add_link('A','D')
 
     cli = SDNCli(ctrl)
-    # Detect interactive support
+    #Detect interactive support
     if sys.stdin and sys.stdin.isatty():
         try:
             cli.cmdloop()
@@ -218,11 +218,11 @@ if __name__ == '__main__':
             print("Interactive mode not supported, falling back to tests.")
     else:
         print("\nRunning non-interactive test cases:")
-        # Test: install a valid flow, show flows, show utilization
+        #Test: install a valid flow, show flows, show utilization
         cli.onecmd('inject_flow A D')
         cli.onecmd('show_flows')
         cli.onecmd('show_util')
-        # Test: fail a link and observe reconfiguration
+        #Test: fail a link and observe reconfiguration
         cli.onecmd('fail_link A B')
         cli.onecmd('inject_flow A C')
         cli.onecmd('show_flows')
